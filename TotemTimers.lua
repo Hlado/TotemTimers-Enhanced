@@ -193,7 +193,8 @@ function TotemTimers_Disable()
     TotemTimersFrame:UnregisterEvent("PLAYER_LEVEL_UP");
     TotemTimersFrame:UnregisterEvent("PLAYER_ENTERING_WORLD");
     TotemTimersFrame:UnregisterEvent("SPELLCAST_STOP");
-  TotemTimersFrame:UnregisterEvent("PLAYER_DEAD");
+    TotemTimersFrame:UnregisterEvent("PLAYER_DEAD");
+    TotemTimersFrame:UnregisterEvent("CHAT_MSG_SPELL_SELF_BUFF");
     TotemTimersFrame:UnregisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH");
     TotemTimersFrame:UnregisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS");
     TotemTimersFrame:UnregisterEvent("CHAT_MSG_COMBAT_HOSTILEPLAYER_HITS");
@@ -209,6 +210,7 @@ function TotemTimers_Enable()
     TotemTimersFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
     TotemTimersFrame:RegisterEvent("SPELLCAST_STOP");
     TotemTimersFrame:RegisterEvent("PLAYER_DEAD");
+    TotemTimersFrame:RegisterEvent("CHAT_MSG_SPELL_SELF_BUFF");
     TotemTimersFrame:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH");
     TotemTimersFrame:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS");
     TotemTimersFrame:RegisterEvent("CHAT_MSG_COMBAT_HOSTILEPLAYER_HITS");
@@ -581,6 +583,15 @@ function TotemTimers_OnEvent(event)
             totem.active = nil;
         end
         TotemTimers_UpdateButtons();
+    elseif ( event == "CHAT_MSG_SPELL_SELF_BUFF" ) then
+        start,_ = string.find(arg1, "Totemic Recall")
+        if start ~= nil then
+            data.duration = 0;
+            for num, totem in TTActiveTotems do
+                totem.active = nil;
+            end
+            TotemTimers_UpdateButtons();
+        end
     elseif ( event == "PLAYER_ENTERING_WORLD" ) then
         TotemTimers_SetupGlobals();
         --TotemTimers_SetupHooks();
